@@ -20,7 +20,7 @@ COPY packages/remote-web/package.json packages/remote-web/package.json
 COPY packages/ui/package.json packages/ui/package.json
 COPY packages/web-core/package.json packages/web-core/package.json
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+RUN --mount=type=cache,id=s/6da40d73-0c8c-41b6-b5cb-d9cfd872661e-pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
 
 COPY packages/remote-web/ packages/remote-web/
@@ -61,21 +61,31 @@ RUN cargo --version >/dev/null
 COPY Cargo.toml Cargo.lock ./
 # Copy workspace member manifests so Cargo can resolve workspace-shared deps
 # without invalidating the build on every unrelated source change.
-COPY crates/server/Cargo.toml crates/server/Cargo.toml
-COPY crates/trusted-key-auth/Cargo.toml crates/trusted-key-auth/Cargo.toml
-COPY crates/mcp/Cargo.toml crates/mcp/Cargo.toml
+COPY crates/client-info/Cargo.toml crates/client-info/Cargo.toml
 COPY crates/db/Cargo.toml crates/db/Cargo.toml
+COPY crates/deployment/Cargo.toml crates/deployment/Cargo.toml
+COPY crates/desktop-bridge/Cargo.toml crates/desktop-bridge/Cargo.toml
+COPY crates/embedded-ssh/Cargo.toml crates/embedded-ssh/Cargo.toml
 COPY crates/executors/Cargo.toml crates/executors/Cargo.toml
-COPY crates/services/Cargo.toml crates/services/Cargo.toml
-COPY crates/worktree-manager/Cargo.toml crates/worktree-manager/Cargo.toml
-COPY crates/workspace-manager/Cargo.toml crates/workspace-manager/Cargo.toml
-COPY crates/relay-control/Cargo.toml crates/relay-control/Cargo.toml
-COPY crates/server-info/Cargo.toml crates/server-info/Cargo.toml
 COPY crates/git/Cargo.toml crates/git/Cargo.toml
 COPY crates/git-host/Cargo.toml crates/git-host/Cargo.toml
 COPY crates/local-deployment/Cargo.toml crates/local-deployment/Cargo.toml
-COPY crates/deployment/Cargo.toml crates/deployment/Cargo.toml
+COPY crates/mcp/Cargo.toml crates/mcp/Cargo.toml
+COPY crates/preview-proxy/Cargo.toml crates/preview-proxy/Cargo.toml
+COPY crates/relay-client/Cargo.toml crates/relay-client/Cargo.toml
+COPY crates/relay-control/Cargo.toml crates/relay-control/Cargo.toml
+COPY crates/relay-hosts/Cargo.toml crates/relay-hosts/Cargo.toml
+COPY crates/relay-tunnel/Cargo.toml crates/relay-tunnel/Cargo.toml
+COPY crates/relay-ws/Cargo.toml crates/relay-ws/Cargo.toml
+COPY crates/remote-info/Cargo.toml crates/remote-info/Cargo.toml
 COPY crates/review/Cargo.toml crates/review/Cargo.toml
+COPY crates/server/Cargo.toml crates/server/Cargo.toml
+COPY crates/server-info/Cargo.toml crates/server-info/Cargo.toml
+COPY crates/services/Cargo.toml crates/services/Cargo.toml
+COPY crates/tauri-app/Cargo.toml crates/tauri-app/Cargo.toml
+COPY crates/trusted-key-auth/Cargo.toml crates/trusted-key-auth/Cargo.toml
+COPY crates/workspace-manager/Cargo.toml crates/workspace-manager/Cargo.toml
+COPY crates/worktree-manager/Cargo.toml crates/worktree-manager/Cargo.toml
 COPY crates/api-types crates/api-types
 COPY crates/relay-types crates/relay-types
 COPY crates/remote crates/remote
@@ -94,9 +104,9 @@ RUN if [ -z "${FEATURES}" ]; then \
       rm -f crates/remote/Cargo.lock; \
     fi
 
-RUN --mount=type=cache,id=cargo-registry,target=/usr/local/cargo/registry \
-    --mount=type=cache,id=cargo-git,target=/usr/local/cargo/git \
-    --mount=type=cache,id=remote-target,target=/app/target \
+RUN --mount=type=cache,id=s/6da40d73-0c8c-41b6-b5cb-d9cfd872661e-cargo-registry,target=/usr/local/cargo/registry \
+    --mount=type=cache,id=s/6da40d73-0c8c-41b6-b5cb-d9cfd872661e-cargo-git,target=/usr/local/cargo/git \
+    --mount=type=cache,id=s/6da40d73-0c8c-41b6-b5cb-d9cfd872661e-remote-target,target=/app/target \
     --mount=type=ssh \
     cargo build ${FEATURES:+--locked} --release --manifest-path crates/remote/Cargo.toml ${FEATURES:+--features ${FEATURES}} \
  && cp /app/target/release/${APP_NAME} /app/bin/${APP_NAME}
